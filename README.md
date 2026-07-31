@@ -11,9 +11,45 @@
 
 ## 설치
 
+이 패키지는 [GitHub Packages](https://github.com/payot-inc/toss-ui/packages) 에 배포됩니다. GitHub Packages 는 **공개 패키지라도 설치에 토큰을 요구**하므로, 쓰려는 프로젝트에 아래 설정이 한 번 필요합니다.
+
+**1. 프로젝트 루트에 `.npmrc`**
+
+```ini [.npmrc]
+@payot-inc:registry=https://npm.pkg.github.com
+```
+
+**2. 토큰 등록** — `read:packages` 권한의 [Personal Access Token (classic)](https://github.com/settings/tokens) 을 발급해 홈 디렉터리의 `~/.npmrc` 에 넣습니다. 토큰이 저장소에 커밋되지 않도록 프로젝트 `.npmrc` 가 아닌 홈에 둡니다.
+
+```ini [~/.npmrc]
+//npm.pkg.github.com/:_authToken=ghp_xxxxxxxxxxxx
+```
+
+**3. 설치**
+
 ```bash
+npm install @payot-inc/toss-ui
+# 또는
 bun add @payot-inc/toss-ui
 ```
+
+CI 에서는 `GITHUB_TOKEN` 에 `packages: read` 권한을 주고 `NODE_AUTH_TOKEN` 으로 넘기면 됩니다.
+
+```yaml [.github/workflows/ci.yml]
+permissions:
+  packages: read
+
+steps:
+  - uses: actions/setup-node@v7
+    with:
+      registry-url: https://npm.pkg.github.com
+      scope: '@payot-inc'
+  - run: npm ci
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+## 사용
 
 ```ts [nuxt.config.ts]
 export default defineNuxtConfig({
@@ -116,6 +152,20 @@ bun run build         # dist/ 생성
 ```
 
 `playground/` 는 모든 토큰과 컴포넌트를 한 페이지에 늘어놓은 확인용 앱입니다. 헤더의 버튼으로 라이트/다크를 전환해 adaptive 팔레트가 어떻게 뒤집히는지 볼 수 있습니다.
+
+## 배포
+
+`package.json` 의 `version` 을 올리고 GitHub 에서 릴리스를 만들면 [publish 워크플로](.github/workflows/publish.yml) 가 GitHub Packages 로 배포합니다. `GITHUB_TOKEN` 을 쓰므로 별도 시크릿 설정이 필요 없습니다.
+
+```bash
+gh release create v0.1.0 --generate-notes
+```
+
+로컬에서 직접 배포하려면 `write:packages` 권한의 토큰이 `~/.npmrc` 에 있어야 합니다.
+
+```bash
+npm publish   # prepack 이 dist/ 를 빌드합니다
+```
 
 ## 라이선스
 

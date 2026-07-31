@@ -1,0 +1,48 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+
+      # GitHub Packages 인증용 .npmrc 를 만들어 준다.
+      # 저장소의 .npmrc 는 스코프 → 레지스트리 매핑만 담당한다.
+      - name: Setup node for GitHub Packages
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@payot-inc'
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Prepare
+        run: bun run dev:prepare
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      # prepack 이 dist/ 를 빌드한다.
+      - name: Publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
