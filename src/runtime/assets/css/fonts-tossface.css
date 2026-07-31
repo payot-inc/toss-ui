@@ -1,0 +1,7 @@
+/*
+ * Tossface — 토스 공식 이모지 폰트 (SIL OFL).
+ *
+ * 이모지 카테고리별로 12 조각(조각당 최대 800KB 대)이라 서브셋 유지가 필수다.
+ * 합본 빌드가 배포되지 않으므로 `fonts: 'bundled'` 모드에서도 이 파일을 그대로 쓴다.
+ */
+@import url("https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css");
