@@ -69,6 +69,21 @@ export default defineNuxtConfig({
 </template>
 ```
 
+### 아이콘
+
+아이콘 컬렉션 `@iconify-json/lucide` 는 이 모듈의 의존성으로 함께 설치되며, `@nuxt/icon` 의
+`clientBundle.scan` 을 기본으로 켜 둡니다. 그래서 네비게이션 아이템처럼 **배열·config 로 넘기는
+동적 아이콘명**(`{ icon: 'i-lucide-wallet' }`)까지 소스 스캔으로 번들에 포함되어, SSR/프리렌더
+단계에서 `[Icon] failed to load icon lucide:*` 경고 없이 아이콘이 그려집니다. 별도 설정은 필요 없습니다.
+
+> [!NOTE]
+> `@nuxt/icon` 은 아이콘 컬렉션을 **소비 프로젝트 루트의 `node_modules`** 에서만 찾습니다
+> (`rootDir` · `workspaceDir` 기준). `npm` · `yarn` · `bun` 은 의존성을 루트로 호이스팅하므로
+> 자동으로 동작하지만, `pnpm` 처럼 의존성을 엄격히 중첩 설치하는 패키지 매니저에서는
+> `@iconify-json/lucide` 가 루트에 없어 컬렉션을 못 찾을 수 있습니다. 이 경우 소비 프로젝트에서
+> 직접 설치하거나(`pnpm add -D @iconify-json/lucide`) `.npmrc` 에
+> `public-hoist-pattern[]=@iconify-json/*` 를 추가해 루트로 끌어올리세요.
+
 ## 옵션
 
 ```ts [nuxt.config.ts]
